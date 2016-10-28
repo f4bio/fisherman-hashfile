@@ -1,0 +1,5 @@
+complete -xc hashfile -s h -l help -d "Show usage help"
+complete -xc hashfile -s v -l version -d "Show version information"
+complete -xc hashfile -n "__fish_use_subcommand" -a md5 -d "Generate md5 hashfile"
+complete -xc hashfile -n "__fish_use_subcommand" -a sha1 -d "Generate sha1 hashfile"
+complete -xc hashfile -n "__fish_use_subcommand" -a sha3 -d "Generate sha3 hashfile"

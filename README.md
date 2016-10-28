@@ -3,7 +3,7 @@
 
 # hashfile
 
-EXAMPLE/TESTING PROJECT!
+### EXAMPLE/TESTING PROJECT!
 if you want this functionality use `rhash`
 
 ## Install
