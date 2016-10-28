@@ -2,7 +2,7 @@ function __hashfile_usage
     # set -l uline (set_color -u)
     # set -l nc (set_color normal)
 
-    echo "Usage: hashfile [COMMAND]"
+    echo "Usage: hashfile [COMMAND] [FILE]"
     echo
     echo "where COMMAND can be one of:"
     echo "       "md5"  generate .md5 file"

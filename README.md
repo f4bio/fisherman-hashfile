@@ -3,8 +3,12 @@
 
 # hashfile
 
-### EXAMPLE/TESTING PROJECT!
-if you want this functionality use `rhash`
+EXAMPLE/TESTING PROJECT!
+wrapper around:
+```
+$ cd (dirname FILENAME)
+$ rhash -o FILENAME.sha1 --sha1 FILENAME.zip
+```
 
 ## Install
 
