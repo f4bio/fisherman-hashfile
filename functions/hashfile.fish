@@ -14,7 +14,7 @@ function hashfile -d "generate checksum files"
 		return 1
 	end
 
-	set -l target_path (dirname (fish_realpath $argv[2]))
+	set -l target_path (dirname (realpath $argv[2]))
 	set -l target_file (basename $argv[2])
 	# echo "target_path: $target_path"
 	# echo "target_file: $target_file"

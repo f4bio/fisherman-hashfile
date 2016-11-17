@@ -7,7 +7,8 @@ EXAMPLE/TESTING PROJECT!
 wrapper around:
 ```
 $ cd (dirname FILENAME)
-$ rhash -o FILENAME.sha1 --sha1 FILENAME.zip
+$ rhash -o FILENAME.md5 --md5 FILENAME
+$ rhash -c FILENAME.md5
 ```
 
 ## Install
@@ -21,7 +22,7 @@ fisher f4bio/hashfile
 ## Usage
 
 ```fish
-hashfile
+hashfile [md5|sha1|sha3] /path/to/file
 ```
 
 [travis-link]: https://travis-ci.org/f4bio/hashfile
