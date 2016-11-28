@@ -29,30 +29,24 @@ function hashfile -d "generate checksum files"
 		case -h --help help
 			__hashfile_usage > /dev/stderr
 			return
-
 		case -v --version version
 			echo "v$hashfile_version (using: $rhash_version)"
 			return
-
 		# case md5 sha1 sha3
 		# 	echo "checking if valid checksum format..."
 		# 	if test (count $argv) -eq 3
 		# 		echo "only generating file..."
 		# 		echo "$target_file $argv[3]" | tee "$target_file.$argv[1]"
 		# 	end
-
 		case md5
 			# echo "generating md5 file..."
 			rhash --output "$target_file.md5" --md5 $target_file
-
 		case sha1
 			# echo "generating sha1 file..."
 			rhash --output $target_file.sha1 --sha1 $target_file
-
 		case sha3
 			# echo "generating sha3 file..."
 			rhash --output $target_file.md5 --sha3-512 $target_file
-
 		case -\*\*
 			echo "hashfile: '$argv[1]' is not a valid option." > /dev/stderr
 			__hashfile_usage > /dev/stderr
