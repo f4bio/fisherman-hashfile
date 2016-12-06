@@ -4,57 +4,57 @@ function hashfile -d "generate checksum files"
 
 	set -l current_dir (pwd)
 	set -l cmd
-
-	# echo "argv[1]: $argv[1]"
-	# echo "argv[2]: $argv[2]"
-	# echo "count(argv): "(count $argv)""
+  set -l algo "--md5"
+	set -l input_file
+  set -l given_hash
 
 	if test (count $argv) -lt 2
 		__hashfile_usage > /dev/stderr
 		return 1
 	end
 
-	set -l target_path (dirname (realpath $argv[2]))
-	set -l target_file (basename $argv[2])
-	# echo "target_path: $target_path"
-	# echo "target_file: $target_file"
-	cd $target_path
+for idx in (seq (count $argv))
 
-	if test (count $argv) -eq 3
-		# echo "only generating file..."
-		echo "$target_file $argv[3]" | tee "$target_file.$argv[1]"
-	end
-
-	switch "$argv[1]"
+	switch $argv[$idx]
 		case -h --help help
 			__hashfile_usage > /dev/stderr
 			return
 		case -v --version version
 			echo "v$hashfile_version (using: $rhash_version)"
 			return
-		# case md5 sha1 sha3
-		# 	echo "checking if valid checksum format..."
-		# 	if test (count $argv) -eq 3
-		# 		echo "only generating file..."
-		# 		echo "$target_file $argv[3]" | tee "$target_file.$argv[1]"
-		# 	end
-		case md5
-			# echo "generating md5 file..."
-			rhash --output "$target_file.md5" --md5 $target_file
-		case sha1
-			# echo "generating sha1 file..."
-			rhash --output $target_file.sha1 --sha1 $target_file
-		case sha3
-			# echo "generating sha3 file..."
-			rhash --output $target_file.md5 --sha3-512 $target_file
-		case -\*\*
-			echo "hashfile: '$argv[1]' is not a valid option." > /dev/stderr
-			__hashfile_usage > /dev/stderr
-			return 1
+		case -g --given
+			set given_hash $argv[(math "$idx + 1")]
+		case md5 sha1 sha3
+			set algo $argv[$idx]
+	end
+	if test -f $argv[$idx]
+		set input_file $argv[$idx]
+		set target_path (dirname (realpath $argv[$idx]))
+		set target_file (basename $argv[$idx])
+	end
+end
+	# echo "given hash: $given_hash"
+	# echo "target path: $target_path"
+	# echo "target file: $target_file"
+	# echo "algo: $algo"
+	# echo "input file: $input_file"
+
+	if test ! -f "$target_path/$target_file"
+		echo "no such file $target_file in $target_path"
+		__hashfile_usage > /dev/stderr
+		return 2
+	end
+	if test -d $target_path
+		# echo "changing directory to $target_path"
+		cd $target_path
 	end
 
-	# echo "checking file..."
-	rhash -c "$target_file.$argv[1]"
+	if test -n $given_hash
+		# echo "no hash given, calculating..."
+		rhash --output "$target_file.$algo" "--$algo" "$target_file"
+	end
+
+	rhash -c "$target_file.$algo"
 
 	cd $current_dir
 end
