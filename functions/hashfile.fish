@@ -1,6 +1,6 @@
 function hashfile -d "generate checksum files"
 	set -g hashfile_version 0.0.1
-	set -g rhash_vesion (rhash --version)[1]
+	set -g rhash_version (rhash --version)[1]
 
 	set -l current_dir (pwd)
 	set -l cmd
@@ -13,26 +13,26 @@ function hashfile -d "generate checksum files"
 		return 1
 	end
 
-for idx in (seq (count $argv))
+	for idx in (seq (count $argv))
 
-	switch $argv[$idx]
-		case -h --help help
-			__hashfile_usage > /dev/stderr
-			return
-		case -v --version version
-			echo "v$hashfile_version (using: $rhash_version)"
-			return
-		case -g --given
-			set given_hash $argv[(math "$idx + 1")]
-		case md5 sha1 sha3
-			set algo $argv[$idx]
+		switch $argv[$idx]
+			case -h --help help
+				__hashfile_usage > /dev/stderr
+				return
+			case -v --version version
+				echo "v$hashfile_version (using: $rhash_version)"
+				return
+			case -g --given
+				set given_hash $argv[(math "$idx + 1")]
+			case md5 sha1 sha3
+				set algo $argv[$idx]
+		end
+		if test -f $argv[$idx]
+			set input_file $argv[$idx]
+			set target_path (dirname (realpath $argv[$idx]))
+			set target_file (basename $argv[$idx])
+		end
 	end
-	if test -f $argv[$idx]
-		set input_file $argv[$idx]
-		set target_path (dirname (realpath $argv[$idx]))
-		set target_file (basename $argv[$idx])
-	end
-end
 	# echo "given hash: $given_hash"
 	# echo "target path: $target_path"
 	# echo "target file: $target_file"
