@@ -1,10 +1,11 @@
 function hashfile -d "generate checksum files"
 	set -g hashfile_version 0.0.1
 	set -g rhash_version (rhash --version)[1]
+	set -g verbose 0
 
 	set -l current_dir (pwd)
 	set -l cmd
-  set -l algo "--md5"
+  set -l algo "md5"
 	set -l input_file
   set -l given_hash
 
@@ -20,12 +21,14 @@ function hashfile -d "generate checksum files"
 				__hashfile_usage > /dev/stderr
 				return
 			case -v --version version
-				echo "v$hashfile_version (using: $rhash_version)"
+				echo -e "\nv$hashfile_version (using: $rhash_version)\n"
 				return
+			case --verbose
+				set -g verbose 1
 			case -g --given
-				set given_hash $argv[(math "$idx + 1")]
+				set -l given_hash $argv[(math "$idx + 1")]
 			case md5 sha1 sha3
-				set algo $argv[$idx]
+				set -l algo $argv[$idx]
 		end
 		if test -f $argv[$idx]
 			set input_file $argv[$idx]
@@ -40,21 +43,26 @@ function hashfile -d "generate checksum files"
 	# echo "input file: $input_file"
 
 	if test ! -f "$target_path/$target_file"
-		echo "no such file $target_file in $target_path"
+		echo -e "\n > no such file $target_file in $target_path\n"
 		__hashfile_usage > /dev/stderr
 		return 2
 	end
 	if test -d $target_path
-		# echo "changing directory to $target_path"
+		__hashfile_log "changing directory to $target_path"
 		cd $target_path
 	end
 
 	if test -n $given_hash
-		# echo "no hash given, calculating..."
+		__hashfile_log "no hash given, calculating..."
 		rhash --output "$target_file.$algo" "--$algo" "$target_file"
+	else
+		__hashfile_log "hash given, writing file..."
+		echo "$target_file $given_hash" > "$target_file.$algo"
 	end
 
+	__hashfile_log "checking..."
 	rhash -c "$target_file.$algo"
 
 	cd $current_dir
+	__hashfile_log "done!"
 end
