@@ -9,6 +9,12 @@ function hashfile -d "generate checksum files"
 	set -l input_file
   set -l given_hash
 
+	rhash --version > /dev/null
+	if test $status -ne 0
+		__hashfile_rhash_missing > /dev/stderr
+		return 1
+	end
+
 	if test (count $argv) -lt 2
 		__hashfile_usage > /dev/stderr
 		return 1
@@ -29,6 +35,8 @@ function hashfile -d "generate checksum files"
 				set -l given_hash $argv[(math "$idx + 1")]
 			case md5 sha1 sha3
 				set -l algo $argv[$idx]
+			case sha3
+				set -l algo "sha3-256"
 		end
 		if test -f $argv[$idx]
 			set input_file $argv[$idx]
