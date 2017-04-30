@@ -1,7 +1,7 @@
 function hashfile -d "generate checksum files"
 	set -g hashfile_version 0.0.1
 	set -g rhash_version (rhash --version)[1]
-	set -g verbose 0
+	set -g verbose false
 
 	set -l current_dir (pwd)
 	set -l cmd
@@ -21,6 +21,7 @@ function hashfile -d "generate checksum files"
 	end
 
 	for idx in (seq (count $argv))
+		__hashfile_log $argv[$idx]
 
 		switch $argv[$idx]
 			case -h --help help
@@ -30,13 +31,12 @@ function hashfile -d "generate checksum files"
 				echo -e "\nv$hashfile_version (using: $rhash_version)\n"
 				return
 			case --verbose
-				set -g verbose 1
+				set -g verbose true
 			case -g --given
-				set -l given_hash $argv[(math "$idx + 1")]
-			case md5 sha1 sha3
-				set -l algo $argv[$idx]
-			case sha3
-				set -l algo "sha3-256"
+				set given_hash $argv[(math $idx+1)]
+			case --algo
+				set algo $argv[(math $idx+1)]
+				set algo_ext $argv[(math $idx+1)]
 		end
 		if test -f $argv[$idx]
 			set input_file $argv[$idx]
@@ -44,11 +44,15 @@ function hashfile -d "generate checksum files"
 			set target_file (basename $argv[$idx])
 		end
 	end
-	# echo "given hash: $given_hash"
-	# echo "target path: $target_path"
-	# echo "target file: $target_file"
-	# echo "algo: $algo"
-	# echo "input file: $input_file"
+
+	__hashfile_log "=================="
+	__hashfile_log "given hash: $given_hash"
+	__hashfile_log "target path: $target_path"
+	__hashfile_log "target file: $target_file"
+	__hashfile_log "algo: $algo"
+	__hashfile_log "algo_ext: $algo_ext"
+	__hashfile_log "input file: $input_file"
+	__hashfile_log "=================="
 
 	if test ! -f "$target_path/$target_file"
 		echo -e "\n > no such file $target_file in $target_path\n"
@@ -62,14 +66,14 @@ function hashfile -d "generate checksum files"
 
 	if test -n $given_hash
 		__hashfile_log "no hash given, calculating..."
-		rhash --output "$target_file.$algo" "--$algo" "$target_file"
+		eval rhash "--$algo" --output "$target_file.$algo_ext" "$target_file"
 	else
 		__hashfile_log "hash given, writing file..."
-		echo "$target_file $given_hash" > "$target_file.$algo"
+		echo "$target_file $given_hash" > "$target_file.$algo_ext"
 	end
 
 	__hashfile_log "checking..."
-	rhash -c "$target_file.$algo"
+	rhash -c "$target_file.$algo_ext"
 
 	cd $current_dir
 	__hashfile_log "done!"

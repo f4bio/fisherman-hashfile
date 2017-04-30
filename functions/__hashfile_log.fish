@@ -1,5 +1,5 @@
 function __hashfile_log
-  if test $verbose -eq 1
-    echo -e "\n > $argv\n"
+  if eval $verbose
+    echo -e "> $argv"
   end
 end
