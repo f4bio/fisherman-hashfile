@@ -5,7 +5,7 @@ function hashfile -d "generate checksum files"
 
 	set -l current_dir (pwd)
 	set -l cmd
-  set -l algo "md5"
+  set -l algo
 	set -l input_file
   set -l given_hash
 
@@ -35,8 +35,18 @@ function hashfile -d "generate checksum files"
 			case -g --given
 				set given_hash $argv[(math $idx+1)]
 			case --algo
-				set algo $argv[(math $idx+1)]
-				set algo_ext $argv[(math $idx+1)]
+				set -l tmp $argv[(math $idx+1)]
+				switch $tmp
+					case sha3
+						set algo "sha3-256"
+						set algo_ext "sha3"
+					case sha1
+						set algo "sha1"
+						set algo_ext "sha1"
+					case md5
+						set algo "md5"
+						set algo_ext "md5"
+				end
 		end
 		if test -f $argv[$idx]
 			set input_file $argv[$idx]
@@ -62,6 +72,11 @@ function hashfile -d "generate checksum files"
 	if test -d $target_path
 		__hashfile_log "changing directory to $target_path"
 		cd $target_path
+	end
+	if test -z $algo
+		__hashfile_log "unknown algo '$algo'"
+		__hashfile_usage > /dev/stderr
+		return 3
 	end
 
 	if test -n $given_hash
