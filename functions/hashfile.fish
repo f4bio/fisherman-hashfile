@@ -79,7 +79,7 @@ function hashfile -d "generate checksum files"
 		return 3
 	end
 
-	if test -n $given_hash
+	if test -z $given_hash
 		__hashfile_log "no hash given, calculating..."
 		eval rhash "--$algo" --output "$target_file.$algo_ext" "$target_file"
 	else
